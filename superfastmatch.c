@@ -160,6 +160,9 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
     int i,j;
     int overlapping;
     int unfiltered_length = PyList_Size(unfiltered);
+    if (unfiltered_length == 0){
+        return filtered;
+    }
     PyList_Append(filtered,PyList_GetItem(unfiltered,unfiltered_length-1));
     //Iterate backwards, ensuring longest matches first
     for (i=(unfiltered_length-2);i>=0;i--){
