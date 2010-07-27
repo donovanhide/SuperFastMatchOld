@@ -2,9 +2,6 @@
 #include "Python.h"
 #include "string.h"
 #include <stdio.h>
-#include "unistd.h"
-
-
 
 /* note that this is completely and totally lifted from Paul Hsieh:
 http://www.azillionmonkeys.com/qed/hash.html */
@@ -79,7 +76,7 @@ PyObject * GetHashes(const char * data, int len, int windowsize){
 	int i;
 	uint32_t hash;
 	for (i = 0; i < numhashes; i++) {   
-	    printf("%.*s\n", windowsize,data+i);
+        // printf("%.*s\n", windowsize,data+i);
         hash = SuperFastHash(data + i, windowsize);
         PyObject* item = PyLong_FromUnsignedLong(hash);
         PyList_SetItem(list,i,item); 
@@ -93,10 +90,10 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
 	int a_len, b_len, windowsize;
 	PyObject* unfiltered = PyList_New(0);
     PyObject* filtered = PyList_New(0);
-	
-	PyArg_ParseTuple(args, "s#s#i", &a_data, &a_len, &b_data, &b_len, &windowsize); 
 
-    //Shortcut for identical strings
+    PyArg_ParseTuple(args, "s#s#i", &a_data, &a_len, &b_data, &b_len, &windowsize); 
+    
+    // printf("%.*s\n",a_len,a_data);
     if (strcmp(a_data,b_data)==0){
         PyObject* fake1 = PyList_New(0); 
         PyList_Append(fake1,PyTuple_Pack(4,PyLong_FromLong(1234),PyInt_FromLong(0),PyInt_FromLong(a_len-1),PyInt_FromLong(a_len)));
@@ -115,12 +112,12 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
         PyObject* b_dict = PyDict_New();
 
         //Build a dictionary of hashes from b for every hash present in a and initialise a list
-        printf("list size:%d set size:%d\n",PyList_Size(a_list),PySet_Size(a_set));
-        
+        // printf("list size:%d set size:%d\n",PyList_Size(a_list),PySet_Size(a_set));        
+ 
         int i;
         while(PySet_Size(a_set)>0){
             PyObject* item = PySet_Pop(a_set);
-            printf("MakeDict:%ld\n", PyLong_AsLong(item));
+            // printf("MakeDict:%ld\n", PyLong_AsLong(item));
             PyDict_SetItem(b_dict,item,PyList_New(0));
         }
 
@@ -129,7 +126,7 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
             PyObject* hash = PyList_GetItem(b_list,i);
             PyObject* item = PyDict_GetItem(b_dict,hash);
             if (item){
-                printf("AddDict:%ld\n", PyLong_AsLong(hash));
+                // printf("AddDict:%ld\n", PyLong_AsLong(hash));
                 PyList_Append(item,PyTuple_Pack(4,hash,PyInt_FromLong(i),PyInt_FromLong(i+windowsize-1),PyInt_FromLong(windowsize)));
             }
         }
@@ -144,20 +141,20 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
                 PyObject* tuple = PyTuple_Pack(5,item,PyInt_FromLong(i),PyInt_FromLong(i+windowsize-1),PyInt_FromLong(windowsize),matches);
                 PyList_Append(unfiltered,tuple);  
                 counter ++; 
-                printf("Accepted: (%ld,%d,%d,%d) with %d matches '%.*s'\n", PyLong_AsLong(item),i,i+windowsize-1,windowsize,PyList_Size(matches),windowsize,&a_data[i]);
+                // printf("Accepted: (%ld,%d,%d,%d) with %d matches '%.*s'\n", PyLong_AsLong(item),i,i+windowsize-1,windowsize,PyList_Size(matches),windowsize,&a_data[i]);
             }
             else{
-                printf("Rejected: (%ld,%d,%d,%d) '%.*s'\n", PyLong_AsLong(item),i,i+windowsize-1,windowsize,windowsize,&a_data[i]);
+                // printf("Rejected: (%ld,%d,%d,%d) '%.*s'\n", PyLong_AsLong(item),i,i+windowsize-1,windowsize,windowsize,&a_data[i]);
             }
         }   
         
         //Carry on increasing the window until no more found
         windowsize++;
-        printf("[%d,%d]\n", windowsize, counter);
-        fflush(stdout);
+        // printf("[%d,%d]\n", windowsize, counter);
+        // fflush(stdout);
         
     }while(counter!=0);
-    
+
     
     //Now filter so that only longest substrings remain
     int i,j;

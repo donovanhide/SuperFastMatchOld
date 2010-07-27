@@ -1,0 +1,42 @@
+h1. Introduction
+
+Needed a fast algorithm to find the full set of longest common substrings, along with their start and end position in the two input strings. Will be used in the "Churnalisted":http://churnalisted.com/ project for finding cases of copy and paste from press release to news article and then highlighting the exact passages to the site's visitor.
+
+The hashing code section is completely ripped from:
+
+"http://code.google.com/p/py-rollingsuperfasthash/":http://code.google.com/p/py-rollingsuperfasthash/
+
+which in turn derives from:
+
+"http://www.azillionmonkeys.com/qed/hash.html":http://www.azillionmonkeys.com/qed/hash.html
+
+The searching code section is inspired by:
+
+"http://en.wikipedia.org/wiki/Rabin-Karp_string_search_algorithm":http://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_string_search_algorithm
+
+and the filtering code section is inspired by, but not based on:
+
+"http://en.wikipedia.org/wiki/Interval_tree":http://en.wikipedia.org/wiki/Interval_tree
+
+h2. Using
+
+bc. import superfastmatch
+s1 = "I'm a test with a section that will be repeated repeated testingly testingly"
+s2 = "I will be repeated repeated testingly 123 testingly"
+matches = superfastmatch.superfastmatch(s1,s2,6)
+
+where 6 is the minimum substring length to search for and matches is a nested tuple with the following format:
+
+bc. (hash,start,end,length,[(hash,start,end,length),(hash,start,end,length),.....])
+
+
+h2. Limitations
+
+The hashing code processes the input strings byte by byte. If they were to be unicode compatible, for the start and end points to be correct, then the C code would have to use UTF-32 internally and divide all positions by 4. This seemed like it might be slower and quite complicated. The simple hack is to encode all unicode strings as Latin-1 and map any >255 characters to a '?' using the __replace__ flag. It also makes sense to convert the inputs into all lower case. For example:
+
+bc. def test_short_unicode(self):
+s1 = u"This is “Unicode”"
+s2 = u"unicode I am"
+matches = superfastmatch.superfastmatch(s1.lower().encode('latin-1','replace'),s2.lower().encode('latin-1','replace'),2)
+
+Perhaps this conversion belongs in the code itself. Patches welcome!
