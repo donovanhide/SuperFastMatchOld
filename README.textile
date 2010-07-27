@@ -18,6 +18,19 @@ and the filtering code section is inspired by, but not based on:
 
 "http://en.wikipedia.org/wiki/Interval_tree":http://en.wikipedia.org/wiki/Interval_tree
 
+h2. Installation
+
+Easiest:
+
+bc. pip install git+http://github.com/donovanhide/SuperFastMatch.git
+
+or
+
+bc. git clone http://github.com/donovanhide/SuperFastMatch.git
+cd SuperFastMatch
+python setup.py install
+python test.py
+
 h2. Using
 
 bc. import superfastmatch
