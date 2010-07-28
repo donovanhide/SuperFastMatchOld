@@ -109,6 +109,7 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
         PyObject* a_list = GetHashes(a_data,a_len,windowsize);
         PyObject* a_set = PySet_New(a_list);
         PyObject* b_list = GetHashes(b_data,b_len,windowsize);
+        PyObject* b_set = PySet_New(b_list);
         PyObject* b_dict = PyDict_New();
 
         //Build a dictionary of hashes from b for every hash present in a and initialise a list
@@ -117,8 +118,10 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
         int i;
         while(PySet_Size(a_set)>0){
             PyObject* item = PySet_Pop(a_set);
-            // printf("MakeDict:%ld\n", PyLong_AsLong(item));
-            PyDict_SetItem(b_dict,item,PyList_New(0));
+            if (PySet_Contains(b_set,item)==1){
+                // printf("MakeDict:%ld\n", PyLong_AsLong(item));
+                PyDict_SetItem(b_dict,item,PyList_New(0));   
+            }
         }
 
         //For each hash in dictionary add details from b to a list
