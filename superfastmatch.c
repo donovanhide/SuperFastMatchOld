@@ -1,7 +1,6 @@
 #include "stdint.h" /* Replace with <stdint.h> if appropriate */
 #include "Python.h"
 #include "string.h"
-#include <stdio.h>
 
 /* note that this is completely and totally lifted from Paul Hsieh:
 http://www.azillionmonkeys.com/qed/hash.html */
@@ -76,12 +75,18 @@ PyObject * GetHashes(const char * data, int len, int windowsize){
 	int i;
 	uint32_t hash;
 	for (i = 0; i < numhashes; i++) {   
-        // printf("%.*s\n", windowsize,data+i);
         hash = SuperFastHash(data + i, windowsize);
         PyObject* item = PyLong_FromUnsignedLong(hash);
         PyList_SetItem(list,i,item); 
 	}
     return list;
+}
+
+static PyObject * hashes(PyObject *self, PyObject *args) {
+    const char *data;
+    int len,windowsize;
+    PyArg_ParseTuple(args, "s#i", &data, &len, &windowsize); 
+    return GetHashes(data,len,windowsize);
 }
 
 static PyObject * superfastmatch (PyObject *self, PyObject *args) {
@@ -191,6 +196,7 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
 
 PyMethodDef methods[] = {
     {"superfastmatch", superfastmatch, METH_VARARGS, "Given two strings and a minimum window size, returns the longest substrings which occur in both strings"},
+    {"hashes", hashes, METH_VARARGS, "Given a string and a minimum window size, returns the hashes of each window"},
     {NULL, NULL, 0, NULL}
 };
 
