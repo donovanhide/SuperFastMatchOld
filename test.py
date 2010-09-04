@@ -77,5 +77,12 @@ class TestSuperFastMatch(unittest.TestCase):
         print hashes
         self.assertEqual(len(hashes),5)
         
+    def test_hashwindow(self):
+        s = "hash"
+        hashes = superfastmatch.hashes(s,2)
+        for i in range(0,len(hashes)):
+            print s[i:i+2],hashes[i]
+        self.assertEqual(len(hashes),3)
+        
 if __name__ == "__main__":
     unittest.main()
