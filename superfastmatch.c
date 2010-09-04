@@ -65,22 +65,26 @@ int rem;
 }
 
 
-PyObject * GetHashes(const char * data, int len, int windowsize,int bitwidth){
+PyObject * GetHashes(const char * data, int len, int windowsize, int bitwidth, uint32_t lower, uint32_t upper){
     int numhashes = len - windowsize+1;
 	if (windowsize >= len) {
 		numhashes = 1;
 		windowsize = len;
 	}
-    PyObject* list = PyList_New(numhashes);
+    // PyObject* list = PyList_New(numhashes);
+    PyObject* list = PyList_New(0);
 	int i;
 	uint32_t hash;
 	for (i = 0; i < numhashes; i++) {   
         hash = SuperFastHash(data + i, windowsize);
-	if (bitwidth==24){
-		hash=(((hash>>24) ^ hash) & 0xffffff);
-	}
-        PyObject* item = PyLong_FromUnsignedLong(hash);
-        PyList_SetItem(list,i,item); 
+    	if (bitwidth==24){
+    		hash=(((hash>>24) ^ hash) & 0xffffff);
+    	}
+        if (hash>=lower && hash<=upper){
+    	    PyObject* item = PyLong_FromUnsignedLong(hash);
+            PyList_Append(list,item);
+            // PyList_SetItem(list,i,item);
+        }
 	}
     return list;
 }
@@ -88,13 +92,13 @@ PyObject * GetHashes(const char * data, int len, int windowsize,int bitwidth){
 static PyObject * hashes(PyObject *self, PyObject *args) {
     const char *data;
     int len,windowsize,bitwidth;
-    long lower=0;
-    long upper=0;
-    PyArg_ParseTuple(args, "s#i|ill", &data, &len, &windowsize,&bitwidth);
-    if (upper==0){
-        upper = 2**bitwidth;
-    }
-    return GetHashes(data,len,windowsize,bitwidth);
+    uint32_t lower;
+    uint32_t upper;
+    bitwidth=32;
+    lower=0;
+    upper=(1<<32)-1;
+    PyArg_ParseTuple(args, "s#i|ikk", &data, &len, &windowsize,&bitwidth,&lower,&upper);
+    return GetHashes(data,len,windowsize,bitwidth,lower,upper);
 }
 
 static PyObject * superfastmatch (PyObject *self, PyObject *args) {
@@ -119,9 +123,9 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
     do{
         counter = 0;
 
-        PyObject* a_list = GetHashes(a_data,a_len,windowsize,32);
+        PyObject* a_list = GetHashes(a_data,a_len,windowsize,32,0,(1<<32)-1);
         PyObject* a_set = PySet_New(a_list);
-        PyObject* b_list = GetHashes(b_data,b_len,windowsize,32);
+        PyObject* b_list = GetHashes(b_data,b_len,windowsize,32,0,(1<<32)-1);
         PyObject* b_set = PySet_New(b_list);
         PyObject* b_dict = PyDict_New();
 
