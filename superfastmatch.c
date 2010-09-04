@@ -80,7 +80,7 @@ PyObject * GetHashes(const char * data, int len, int windowsize, int bitwidth, u
     	if (bitwidth==24){
     		hash=(((hash>>24) ^ hash) & 0xffffff);
     	}
-        if (hash>=lower && hash<=upper){
+        if ((hash>=lower) && (hash<=upper)){
     	    PyObject* item = PyLong_FromUnsignedLong(hash);
             PyList_Append(list,item);
             // PyList_SetItem(list,i,item);
@@ -96,8 +96,9 @@ static PyObject * hashes(PyObject *self, PyObject *args) {
     uint32_t upper;
     bitwidth=32;
     lower=0;
-    upper=(1<<32)-1;
-    PyArg_ParseTuple(args, "s#i|ikk", &data, &len, &windowsize,&bitwidth,&lower,&upper);
+    upper=(1<<bitwidth)-1;
+    PyArg_ParseTuple(args, "s#i|iII", &data, &len, &windowsize,&bitwidth,&lower,&upper);
+    // printf("%i %i %i %u %u ", len, windowsize,bitwidth,lower,upper);
     return GetHashes(data,len,windowsize,bitwidth,lower,upper);
 }
 

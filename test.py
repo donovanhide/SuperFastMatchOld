@@ -84,7 +84,7 @@ class TestSuperFastMatch(unittest.TestCase):
         for i in range(0,len(hashes)):
             print s[i:i+2],hashes[i]
         self.assertEqual(len(hashes),3)
-
+    
     def test_24bit_hashes(self):
         hashes = superfastmatch.hashes(os.urandom(8192),15,24)
         print hashes
@@ -99,10 +99,11 @@ class TestSuperFastMatch(unittest.TestCase):
     
     def test_32bit_hashes_with_bounds(self):
         upper = (2**32)/2
-        lower = 10000
-        hashes = superfastmatch.hashes(os.urandom(8192),15,32,lower,upper)
+        lower = (2**32)/4
+        NUM_HASHES = 8192
+        hashes = superfastmatch.hashes(os.urandom(NUM_HASHES),15,32,lower,upper)
         print hashes
-        print (max(hashes)<(2**32-1))
+        print "Input: %s Output: %s Max: %s Min: %s Upper:%s Lower %s" % (NUM_HASHES,len(hashes),max(hashes),min(hashes),upper,lower)
         self.assertTrue((min(hashes)>=lower))
         self.assertTrue((max(hashes)<=upper))
 
