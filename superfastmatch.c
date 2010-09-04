@@ -65,7 +65,7 @@ int rem;
 }
 
 
-PyObject * GetHashes(const char * data, int len, int windowsize){
+PyObject * GetHashes(const char * data, int len, int windowsize,int bitwidth){
     int numhashes = len - windowsize+1;
 	if (windowsize >= len) {
 		numhashes = 1;
@@ -76,6 +76,9 @@ PyObject * GetHashes(const char * data, int len, int windowsize){
 	uint32_t hash;
 	for (i = 0; i < numhashes; i++) {   
         hash = SuperFastHash(data + i, windowsize);
+	if (bitwidth==24){
+		hash=(((hash>>24) ^ hash) & 0xffffff);
+	}
         PyObject* item = PyLong_FromUnsignedLong(hash);
         PyList_SetItem(list,i,item); 
 	}
@@ -84,16 +87,21 @@ PyObject * GetHashes(const char * data, int len, int windowsize){
 
 static PyObject * hashes(PyObject *self, PyObject *args) {
     const char *data;
-    int len,windowsize;
-    PyArg_ParseTuple(args, "s#i", &data, &len, &windowsize); 
-    return GetHashes(data,len,windowsize);
+    int len,windowsize,bitwidth;
+    long lower=0;
+    long upper=0;
+    PyArg_ParseTuple(args, "s#i|ill", &data, &len, &windowsize,&bitwidth);
+    if (upper==0){
+        upper = 2**bitwidth;
+    }
+    return GetHashes(data,len,windowsize,bitwidth);
 }
 
 static PyObject * superfastmatch (PyObject *self, PyObject *args) {
-	const char *a_data;
+    const char *a_data;
     const char *b_data;
-	int a_len, b_len, windowsize;
-	PyObject* unfiltered = PyList_New(0);
+    int a_len, b_len, windowsize;
+    PyObject* unfiltered = PyList_New(0);
     PyObject* filtered = PyList_New(0);
 
     PyArg_ParseTuple(args, "s#s#i", &a_data, &a_len, &b_data, &b_len, &windowsize); 
@@ -111,9 +119,9 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
     do{
         counter = 0;
 
-        PyObject* a_list = GetHashes(a_data,a_len,windowsize);
+        PyObject* a_list = GetHashes(a_data,a_len,windowsize,32);
         PyObject* a_set = PySet_New(a_list);
-        PyObject* b_list = GetHashes(b_data,b_len,windowsize);
+        PyObject* b_list = GetHashes(b_data,b_len,windowsize,32);
         PyObject* b_set = PySet_New(b_list);
         PyObject* b_dict = PyDict_New();
 
