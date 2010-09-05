@@ -173,8 +173,8 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
         
         //Carry on increasing the window until no more found
         windowsize++;
-        // printf("[%d,%d]%d\n", windowsize, counter,windowsize*counter);
-        // fflush(stdout);
+        printf("[%d,%d]%d\n", windowsize, counter,windowsize*counter);
+        fflush(stdout);
         
     }while(counter!=0 && (windowsize*counter<HARD_LIMIT)); //Hard Limit
     
