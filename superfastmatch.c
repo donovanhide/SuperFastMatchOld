@@ -103,6 +103,7 @@ static PyObject * hashes(PyObject *self, PyObject *args) {
 }
 
 static PyObject * superfastmatch (PyObject *self, PyObject *args) {
+    const int HARD_LIMIT = 600000;
     const char *a_data;
     const char *b_data;
     int a_len, b_len, windowsize;
@@ -112,14 +113,15 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
     PyArg_ParseTuple(args, "s#s#i", &a_data, &a_len, &b_data, &b_len, &windowsize); 
     
     // printf("%.*s\n",a_len,a_data);
-    if (strcmp(a_data,b_data)==0){
+    //Shortcuts
+    int comparison=strcmp(a_data,b_data);
+    if (comparison==0){
         PyObject* fake1 = PyList_New(0); 
         PyList_Append(fake1,PyTuple_Pack(4,PyLong_FromLong(1234),PyInt_FromLong(0),PyInt_FromLong(a_len-1),PyInt_FromLong(a_len)));
         PyObject* fake2 = PyTuple_Pack(5,PyLong_FromLong(1234),PyInt_FromLong(0),PyInt_FromLong(a_len-1),PyInt_FromLong(a_len),fake1);
         PyList_Append(filtered,fake2);
         return filtered;
     }
-
     int counter;
     do{
         counter = 0;
@@ -171,11 +173,10 @@ static PyObject * superfastmatch (PyObject *self, PyObject *args) {
         
         //Carry on increasing the window until no more found
         windowsize++;
-        // printf("[%d,%d]\n", windowsize, counter);
+        // printf("[%d,%d]%d\n", windowsize, counter,windowsize*counter);
         // fflush(stdout);
         
-    }while(counter!=0);
-
+    }while(counter!=0 && (windowsize*counter<HARD_LIMIT)); //Hard Limit
     
     //Now filter so that only longest substrings remain
     int i,j;

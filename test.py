@@ -72,40 +72,47 @@ class TestSuperFastMatch(unittest.TestCase):
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),21)
     
-    def test_hashes(self):
-        s = "I need to be hashed"
-        hashes = superfastmatch.hashes(s,15)
-        print hashes
-        self.assertEqual(len(hashes),5)
+    def test_long_nearly_same(self):
+        s1=u"Arab foreign ministers meeting in Cairo to forge a unified response to the Israeli offensive against Gaza have asked the Security Council to convene to issue a resolution compelling Israel to “cease immediately [its] aggression.”A delegation headed by Prince Saudi Al Faisal, the Saudi foreign minister, will press the Arab case in New York.The Cairo meeting also discussed calls by Qatar, Syria and Yemen for an emergency Arab summit but the ministers said they had decided to defer a decision until they had tested what could be achieved through the Security Council.The resolutions adopted at the Arab League reflect the positions of regional heavyweights Egypt and Saudi Arabia - American allies who regard the Palestinian group Hamas which controls Gaza as an obstacle to efforts to revive a peace process with Israel.The two countries are anxious to avoid a summit where they are likely to come under pressure from Syria - a Hamas backer - to take steps that might satisfy public opinion but place them at odds with their American friends.The daily images of Israel’s bombardment of Gaza, and the non-stop flow of pictures of dead and injured children on Arab television screens have angered the Arab public and led to widespread condemnation of regional leaders for their inability to defend the Palestinians.Demonstrators in Egypt and elsewhere have demanded that Cairo and Amman break off ties with Israel and expel its ambassadors. There have also been calls for Saudi Arabia to withdraw the initiative it launched in 2002, offering Israel normal relations with all Arab countries in return to its withdrawal to 1967 lines.Egypt in particular has been the target of enormous popular anger for its insistence on sealing its border with Gaza since Hamas seized control of the territory eighteen months ago. The Rafah crossing into Egypt is Gaza’s only outlet to the outside world which does not go through Israel.But Cairo has been deeply rattled by the gains made by the Islamists of Hamas at the expense of their rivals in the Palestinian Authority. Hamas has strong ties with the outlawed Muslim Brotherhood opposition in Egypt. The group does not recognise Israel and calls for armed resistance against it, rejecting the Middle East peace process - a centre piece of Egypt’s foreign policy.Syria reportedly tried to press for the opening of the Rafah crossing at the Arab League meeting, but was turned down. In recent days Cairo has allowed some humanitarian aid to go into Gaza and Palestinians injured in the bombings to cross into Egypt for treatment. But the Egyptian authorities insist the border should remain closed until the Palestinian Authority ousted from Gaza by Hamas is able to run the crossing. Since the start of the Gaza offensive, Arab satellite channels such as al-Jazeera have given much airtime to critics of Egypt who have lambasted the country for accusing Hamas of provoking the Israeli attacks and for receiving Tzipi Livni, the Israeli foreign minister, in Cairo just a day before the launch of the military campaign.In an apparent attempt to assuage Cairo’s hurt feelings, the resolution issued by the Arab foreign ministers “praised the huge efforts made by the Arab Republic of Egypt to support the Palestinian people and to reconcile the Palestinian factions in order to achieve national unity.”"
+        s2=u"Arab foreign ministers meeting in Cairo to frge a unified response to the Israeli offensive against Gaza have asked the Security Council to convene to issue a resolution compelling Israel to “cease immediately [its] aggression.”A delegation headed by Prince Saudi Al Faisal, the Saudi foreign minister, will press the Arab case in New York.The Cairo meeting also discussed calls by Qatar, Syria and Yemen for an emergency Arab summit but the ministers said they had decided to defer a decision until they had tested what could be achieved through the Security Council.The resolutions adopted at the Arab League reflect the positions of regional heavyweights Egypt and Saudi Arabia - American allies who regard the Palestinian group Hamas which controls Gaza as an obstacle to efforts to revive a peace process with Israel.The two countries are anxious to avoid a summit where they are likely to come under pressure from Syria - a Hamas backer - to take steps that might satisfy public opinion but place them at odds with their American friends.The daily images of Israel’s bombardment of Gaza, and the non-stop flow of pictures of dead and injured children on Arab television screens have angered the Arab public and led to widespread condemnation of regional leaders for their inability to defend the Palestinians.Demonstrators in Egypt and elsewhere have demanded that Cairo and Amman break off ties with Israel and expel its ambassadors. There have also been calls for Saudi Arabia to withdraw the initiative it launched in 2002, offering Israel normal relations with all Arab countries in return to its withdrawal to 1967 lines.Egypt in particular has been the target of enormous popular anger for its insistence on sealing its border with Gaza since Hamas seized control of the territory eighteen months ago. The Rafah crossing into Egypt is Gaza’s only outlet to the outside world which does not go through Israel.But Cairo has been deeply rattled by the gains made by the Islamists of Hamas at the expense of their rivals in the Palestinian Authority. Hamas has strong ties with the outlawed Muslim Brotherhood opposition in Egypt. The group does not recognise Israel and calls for armed resistance against it, rejecting the Middle East peace process - a centre piece of Egypt’s foreign policy.Syria reportedly tried to press for the opening of the Rafah crossing at the Arab League meeting, but was turned down. In recent days Cairo has allowed some humanitarian aid to go into Gaza and Palestinians injured in the bombings to cross into Egypt for treatment. But the Egyptian authorities insist the border should remain closed until the Palestinian Authority ousted from Gaza by Hamas is able to run the crossing. Since the start of the Gaza offensive, Arab satellite channels such as al-Jazeera have given much airtime to critics of Egypt who have lambasted the country for accusing Hamas of provoking the Israeli attacks and for receiving Tzipi Livni, the Israeli foreign minister, in Cairo just a day before the launch of the military campaign.In an apparent attempt to assuage Cairo’s hurt feelings, the resolution issued by the Arab foreign ministers “praised the huge efforts made by the Arab Republic of Egypt to support the Palestinian people and to reconcile the Palestinian factions in order to achieve natinal unity.”"
+        matches = superfastmatch.superfastmatch(s1.lower().encode('latin-1','replace'),s2.lower().encode('latin-1','replace'),15)
+        printresults(matches,s1,s2)
+        self.assertEqual(len(matches),18) #Test of HARD_LIMIT
         
+    def test_hashes(self):
+       s = "I need to be hashed"
+       hashes = superfastmatch.hashes(s,15)
+       print hashes
+       self.assertEqual(len(hashes),5)
+   
     def test_hashwindow(self):
-        s = "hash"
-        hashes = superfastmatch.hashes(s,2)
-        for i in range(0,len(hashes)):
-            print s[i:i+2],hashes[i]
-        self.assertEqual(len(hashes),3)
-    
+       s = "hash"
+       hashes = superfastmatch.hashes(s,2)
+       for i in range(0,len(hashes)):
+           print s[i:i+2],hashes[i]
+       self.assertEqual(len(hashes),3)
+
     def test_24bit_hashes(self):
-        hashes = superfastmatch.hashes(os.urandom(8192),15,24)
-        print hashes
-        print (max(hashes)<(2**24-1))
-        self.assertTrue((max(hashes)<(2**24-1)))
-    
+       hashes = superfastmatch.hashes(os.urandom(8192),15,24)
+       print hashes
+       print (max(hashes)<(2**24-1))
+       self.assertTrue((max(hashes)<(2**24-1)))
+
     def test_32bit_hashes(self):
-        hashes = superfastmatch.hashes(os.urandom(8192),15,32)
-        print hashes
-        print (max(hashes)<(2**32-1))
-        self.assertTrue((max(hashes)<(2**32-1)))
-    
+       hashes = superfastmatch.hashes(os.urandom(8192),15,32)
+       print hashes
+       print (max(hashes)<(2**32-1))
+       self.assertTrue((max(hashes)<(2**32-1)))
+
     def test_32bit_hashes_with_bounds(self):
-        upper = (2**32)/2
-        lower = (2**32)/4
-        NUM_HASHES = 8192
-        hashes = superfastmatch.hashes(os.urandom(NUM_HASHES),15,32,lower,upper)
-        print hashes
-        print "Input: %s Output: %s Max: %s Min: %s Upper:%s Lower %s" % (NUM_HASHES,len(hashes),max(hashes),min(hashes),upper,lower)
-        self.assertTrue((min(hashes)>=lower))
-        self.assertTrue((max(hashes)<=upper))
+       upper = (2**32)/2
+       lower = (2**32)/4
+       NUM_HASHES = 8192
+       hashes = superfastmatch.hashes(os.urandom(NUM_HASHES),15,32,lower,upper)
+       print hashes
+       print "Input: %s Output: %s Max: %s Min: %s Upper:%s Lower %s" % (NUM_HASHES,len(hashes),max(hashes),min(hashes),upper,lower)
+       self.assertTrue((min(hashes)>=lower))
+       self.assertTrue((max(hashes)<=upper))
 
 if __name__ == "__main__":
     unittest.main()
