@@ -80,7 +80,7 @@ PyObject * GetHashes(const char * data, int len, int windowsize, int bitwidth, u
     	if (bitwidth==24){
     		hash=(((hash>>24) ^ hash) & 0xffffff);
     	}
-        if ((hash>=lower) && (hash<=upper)){
+        if ((hash>=lower) && (hash<upper)){
     	    PyObject* item = PyLong_FromUnsignedLong(hash);
             PyList_Append(list,item);
             // PyList_SetItem(list,i,item);
