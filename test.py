@@ -4,6 +4,7 @@ import superfastmatch
 import superfastmatchv2
 import unittest 
 import os
+import urllib
 import codecs
 from operator import itemgetter
 
@@ -112,7 +113,7 @@ class TestSuperFastMatch(unittest.TestCase):
        print "Input: %s Output: %s Max: %s Min: %s Upper:%s Lower %s" % (NUM_HASHES,len(hashes),max(hashes),min(hashes),upper,lower)
        self.assertTrue((min(hashes)>=lower))
        self.assertTrue((max(hashes)<=upper))
-
+    
     def test_long_overlaps(self):
            s2 = u"""Raoul Moat has enough local knowledge and survival skills to hide out in the
              woods for days, a former lover said.
@@ -208,7 +209,7 @@ class TestSuperFastMatch(unittest.TestCase):
            """
            matches = superfastmatchv2.match(s1.lower(),s2.lower(),15)
            printresults(matches,s1,s2)
-           self.assertEqual(len(matches),85)
+           self.assertEqual(len(matches),86)
         
     def test_html_junk(self):
         s1 = u"""//Off "); }; function performAutoRefresh() { if(checkAutoRefreshCookie()) { startTheTimer(); }; }; function setSwitchDefaultOn() { jQ("span#auto-on a").replaceWith("On"); jQ("span#auto-off strong").replaceWith("Off"); jQ("div#helper").addClass("image-loading"); }; function setSwitchDefaultOff() { jQ("span#auto-off a").replaceWith("Off"); jQ("span#auto-on strong").replaceWith("On"); jQ("div#helper").removeAttr("class"); }; function startTheTimer() { jQ(document).everyTime(60000, 'initialAutoRefresh', function() { var refreshCacheBusting = parseInt((Math.random() * 100000), 10); jQ("#"+targettedArea).load(window.location+'?refresh=true&_='+refreshCacheBusting+' #'+targettedArea+' > *'); }); }; function OnOffHandlers() { jQ('#auto-on').mousedown( function(){ jQ.cookie('autoRefresh', 'on'); setSwitchDefaultOn(); performAutoRefresh(); return false; }); jQ('#auto-off').mousedown( function(){ jQ.cookie('autoRefresh', 'off'); setSwitchDefaultOff(); jQ(document).stopTime('initialAutoRefresh'); return false; }); }; // ]]> To receive updated content, refresh the page (F5 for a web browser). Raoul Moat, aged six. Photograph: JK PRESS 8.38am: Family photos have been released of Moat as a boy. The Sun newspaper's notes the change from "a cherubic ginger haired boy" to "psycho commando". It also dummies up an image of how Moat might look now based on the police description of his size and what he is believed to be wearing. 8.18am: Nothumbria Police is refusing to confirm or deny the Mail's report that the SAS has joined the hunt. Sky News claimed they had denied it, but when I called a couple of minutes ago a spokesman said: "We are not confirming or denying it. We are not commenting on it." He added there were, as yet, no plans for a press conference this morning. 8.07am: "Raoul son, please this has to stop, it's gone on far too long," says Samantha Stobbart's father, Paul in a video message posted by Northumbria Police last night. 7.58am: The search continues around the Rothbury area. This clickable map shows the area and the key discoveries so far. View Rothbury in a larger map 7.49am: Here are the main development overnight. • Raoul Moat, who is believed to have shot his girlfriend, fatally shot her new partner and seriously wounded a policeman, continues to evade capture . Northumbria police still think he is hiding out in the countryside in the Rothbury area. Temporary deputy chief constable Jim Campbell said today: The searches in this area have proved a particular challenge due to the open farmland and dense woodland and officers are continuing in their efforts today. I'd like to reassure the public that we are doing everything possible to locate Moat and bring this investigation to a conclusion. Although much of the inquiry centres on Rothbury the events in this area are just one part of a complex investigation and activity continues across the force. • The SAS have joined in the manhunt, according to the Daily Mail. Citing sources, the paper said the "special forces excel at working in the dark, with heat-seeking equipment which can work over huge ranges" . • Moat's mother, Josephine Healey, said he would be "better off dead" . Speaking to the Daily Telegraph she said: "I feel like he hasn't been my son since he was 19 years old. He now has a totally different character, attitude and manner. Now when I see him I don't recognise him at all ... If I was to make an appeal I would say he would be better dead." • Two men arrested during the manhunt have been charged with conspiracy to commit murder. Karl Ness and Qhuram Awan are due to appear at Newcastle magistrates court at 10am today."""
@@ -235,13 +236,18 @@ class TestSuperFastMatch(unittest.TestCase):
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),96)
     
-    def test_bible(self):
-        bible = codecs.open('bible.txt',encoding='utf-8').read()
-        s1 = bible[:len(bible)/2]
-        s2 = bible[len(bible)/2:]
-        matches = superfastmatchv2.match(s1,s2,40)
+    def test_bible_against_koran(self):
+        def getFile(path,url,encoding):
+            if not os.path.exists(path):
+                f = open(path,'w')
+                f.write(urllib.urlopen(url).read())
+                f.close()
+            return codecs.open(path,encoding=encoding).read()
+        s1 = getFile('koran.txt','http://www.gutenberg.org/ebooks/2800.txt.utf8','utf-8').split('*END*')[-1]
+        s2 = getFile('bible.txt','http://www.gutenberg.org/ebooks/10','utf-8').split('*END*')[-1]
+        matches = superfastmatchv2.match(s1,s2,20)
         printresults(matches[:20],s1,s2)
-        self.assertEqual(len(matches),267)
-    
+        self.assertEqual(len(matches),25257)
+
 if __name__ == "__main__":
     unittest.main()
