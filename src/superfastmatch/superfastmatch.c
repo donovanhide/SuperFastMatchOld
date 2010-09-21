@@ -215,7 +215,7 @@ PyMethodDef methods[] = {
 };
 
 PyMODINIT_FUNC 
-initsuperfastmatch()
+initfast()
 {
-    (void) Py_InitModule("superfastmatch", methods);   
+    (void) Py_InitModule("superfastmatch.fast", methods);   
 }

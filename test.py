@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import superfastmatch
+import superfastmatch.fast
 import fastmatch
 import unittest 
 import os
@@ -81,25 +81,25 @@ class TestSuperFastMatch(unittest.TestCase):
         
     def test_hashes(self):
        s = "I need to be hashed"
-       hashes = superfastmatch.hashes(s,15)
+       hashes = superfastmatch.fast.hashes(s,15)
        print hashes
        self.assertEqual(len(hashes),5)
        
     def test_hashwindow(self):
        s = "hash"
-       hashes = superfastmatch.hashes(s,2)
+       hashes = superfastmatch.fast.hashes(s,2)
        for i in range(0,len(hashes)):
            print s[i:i+2],hashes[i]
        self.assertEqual(len(hashes),3)
     
     def test_24bit_hashes(self):
-       hashes = superfastmatch.hashes(os.urandom(8192),15,24)
+       hashes = superfastmatch.fast.hashes(os.urandom(8192),15,24)
        # print hashes
        print (max(hashes)<(2**24-1))
        self.assertTrue((max(hashes)<(2**24-1)))
     
     def test_32bit_hashes(self):
-       hashes = superfastmatch.hashes(os.urandom(8192),15,32)
+       hashes = superfastmatch.fast.hashes(os.urandom(8192),15,32)
        # print hashes
        print (max(hashes)<(2**32-1))
        self.assertTrue((max(hashes)<(2**32-1)))
@@ -108,7 +108,7 @@ class TestSuperFastMatch(unittest.TestCase):
        upper = (2**32)/2
        lower = (2**32)/4
        NUM_HASHES = 8192
-       hashes = superfastmatch.hashes(os.urandom(NUM_HASHES),15,32,lower,upper)
+       hashes = superfastmatch.fast.hashes(os.urandom(NUM_HASHES),15,32,lower,upper)
        # print hashes
        print "Input: %s Output: %s Max: %s Min: %s Upper:%s Lower %s" % (NUM_HASHES,len(hashes),max(hashes),min(hashes),upper,lower)
        self.assertTrue((min(hashes)>=lower))
