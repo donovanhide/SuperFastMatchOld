@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import superfastmatch
-import superfastmatchv2
+import fastmatch
 import unittest 
 import os
 import urllib
@@ -16,51 +16,51 @@ class TestSuperFastMatch(unittest.TestCase):
     def test_equal(self):
         s1 = "1234"
         s2 = "1234"
-        matches = superfastmatchv2.match(s1,s2,2)
+        matches = fastmatch.match(s1,s2,2)
         self.assertEqual(len(matches),1)
         printresults(matches,s1,s2)
     
     def test_singleword(self):
         s1 = "fantastic"
         s2 = "fantastic123"
-        matches = superfastmatchv2.match(s1,s2,2)
+        matches = fastmatch.match(s1,s2,2)
         self.assertEqual(len(matches),1)
         printresults(matches,s1,s2)
     
     def test_bad_window_size(self):
-        self.assertRaises(TypeError, superfastmatchv2.match,('test','a test',1))
+        self.assertRaises(TypeError, fastmatch.match,('test','a test',1))
     
     def test_ending(self):
         s1 = "fantastic blank 12345"
         s2 = "fantastic12345"
-        matches = superfastmatchv2.match(s1,s2,2)
+        matches = fastmatch.match(s1,s2,2)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),3)
     
     def test_simple(self):
         s1 = "I'm a test with a section that will be repeated repeated testingly testingly"
         s2 = "I will be repeated repeated testingly 123 testingly"
-        matches = superfastmatchv2.match(s1,s2,6)
+        matches = fastmatch.match(s1,s2,6)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),6)
     
     def test_short_unicode(self):
         s1 = u"This is “unicode”"
         s2 = u"unicode I am"
-        matches = superfastmatchv2.match(s1,s2,2)
+        matches = fastmatch.match(s1,s2,2)
         printresults(matches,s1,s2)
     
     def test_unicode(self):
         s1 = u"From time to time this submerged or latent theater in becomes almost overt. It is close to the surface in Hamlet’s pretense of madness, the “antic disposition” he puts on to protect himself and prevent his antagonists from plucking out the heart of his mystery. It is even closer to the surface when Hamlet enters his mother’s room and holds up, side by side, the pictures of the two kings, Old Hamlet and Claudius, and proceeds to describe for her the true nature of the choice she has made, presenting truth by means of a show. Similarly, when he leaps into the open grave at Ophelia’s funeral, ranting in high heroic terms, he is acting out for Laertes, and perhaps for himself as well, the folly of excessive, melodramatic expressions of grief."
         s2 = u"Almost all of Shakespeare’s Hamlet can be understood as a play about acting and the theater. For example, there is Hamlet’s pretense of madness, the “antic disposition” that he puts on to protect himself and prevent his antagonists from plucking out the heart of his mystery. When Hamlet enters his mother’s room, he holds up, side by side, the pictures of the two kings, Old Hamlet and Claudius, and proceeds to describe for her the true nature of the choice she has made, presenting truth by means of a show. Similarly, when he leaps into the open grave at Ophelia’s funeral, ranting in high heroic terms, he is acting out for Laertes, and perhaps for himself as well, the folly of excessive, melodramatic expressions of grief."
-        matches = superfastmatchv2.match(s1.lower(),s2.lower(),8)
+        matches = fastmatch.match(s1.lower(),s2.lower(),8)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),19)
     
     def test_bug_from_site(self):
         s1=u'\nThe body of a man has been recovered from the River Tweed near Coldstream following a police operation.\nIt follows an eight-day river search for missing man Philip Shoemaker, 51, from Kelso by Lothian and Borders Police.\nRescue units and a helicopter joined search teams in the area following several reports received from members of the public.\nNo formal identification has been made of the man found in the river.\n'
         s2=u'\nAt 12.26pm on Monday, April 23, reports were received of a body lying on the mud flats between the Redheugh Bridge and King Edward Bridge over the River Tyne.\nNorthumbria Police Marine Unit attended and discovered the body of an elderly man.\nThe body was recovered but has not yet been formally identified.\xa0 There are no suspicious circumstances regarding this incident.'
-        matches = superfastmatchv2.match(s1.lower(),s2.lower(),15)
+        matches = fastmatch.match(s1.lower(),s2.lower(),15)
         print matches
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),0)
@@ -68,14 +68,14 @@ class TestSuperFastMatch(unittest.TestCase):
     def test_long_one(self):
         s1=u"""at 12.40am on Sunday, August 5, police were called to the Cashmere nightclub in Berwick after the CCTV operator at Berwick police station saw that signs of a dispute between two factions who had been refused admission to the club by the doorstaff. A total of four officers were called to respond. When the first two arrived at the scene both factions turned on them and assaulted them. One officer was punched to the ground and continued to be attacked as he lay unconscious. The second officer received face and body injuries. By this time two more officers arrived at the scene and were also assaulted. More resources were called out, including officers from Alnwick, the area support group from Hexham, dog handlers and the North East Air Support Unit. Officers from Lothian and Borders police also gave assistance at the scene. The doorstaff also gave valuable assistance to bring the situation under control. Four men were arrested. The four, aged 18, 33, 34 and 44, are all from Berwick and were arrested on suspicion of causing grievous bodily harm, violent disorder and drunk and disorderly. The first four officers on the scene, who are all male,  work at Northumberland area command and are based in Berwick. They were all wearing regulation body armour. Their ages range from 30 to 42.  The officers  who were taken to hospital, one aged 39 and one aged 42, continue to be detained. Both are experienced officers with Northumbria, one with 11 years' service and the other 17. Their injuries are not considered life threatening and both are in a stable condition. A total of four other officers - three men and a woman -  will receive medical attention from the force's Occupational Health Unit. Supt Gordon Milward, Northumberland area command, said: "First of all I must stress that this incident was totally out of character for Berwick, where disorder like this is extremely uncommon. We still don't know why what started as a dispute outside a club should have escalated in this way. "Attacks against police officers are totally unacceptable and there is no doubt that without the assistance of the doorstaff the outcome could have been even more serious. Fortunately, the officers' injuries do not appear to be as serious as was first thought, but any attack against a police officer is one too many. "We are leaving no stone unturned in the investigation to bring those responsible to justice. We are carrying out an extensive review of all CCTV coverage in the town centre overnight in an effort to trace anyone acting suspiciously in and around the Golden Square area. It's highly likely that more arrests will be made. We are also increasing reassurance patrols around Berwick." Anyone with information is asked to contact Northumbria Police on 08456 043 043 or call Crimestoppers."""
         s2=u"""Two police officers are in hospital after they were attacked outside a Northumberland nightclub. One of the men, who had been called to a dispute at the Cashmere club in Berwick, was punched to the ground and attacked again as he lay unconscious. The second officer suffered facial and body injuries in the clash, believed to have been sparked when two groups of people were refused admission. Four Berwick men, aged 18 to 44, have been arrested. They are being questioned over the incident, which happened in the early hours of Sunday. The two officers were taken to Wansbeck General Hospital, where their condition is described as stable. Police said the disturbance broke out after two separate groups of revellers were refused admission to the nightclub. Four police officers were called to the scene by CCTV operators and the two groups joined force to attack the officers when they arrived. Reinforcements were called out from Alnwick, and four other police officers were hurt in the clashes. The club's door staff have been praised for helping to bring the incident under control. 'More arrests' Supt Gordon Milward, of Northumbria Police, said: "We still don't know why what started as a dispute outside a club should have escalated in this way. "Attacks against police officers are totally unacceptable and there is no doubt that without the assistance of the door staff the outcome could have been even more serious. "We are leaving no stone unturned in the investigation to bring those responsible to justice. "It's highly likely that more arrests will be made." Officers are now reviewing CCTV coverage in the town centre as part of the investigation."""
-        matches = superfastmatchv2.match(s1.lower(),s2.lower(),15)
+        matches = fastmatch.match(s1.lower(),s2.lower(),15)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),31)
     
     def test_long_nearly_same(self):
         s1=u"Arab foreign ministers meeting in Cairo to forge a unified response to the Israeli offensive against Gaza have asked the Security Council to convene to issue a resolution compelling Israel to “cease immediately [its] aggression.”A delegation headed by Prince Saudi Al Faisal, the Saudi foreign minister, will press the Arab case in New York.The Cairo meeting also discussed calls by Qatar, Syria and Yemen for an emergency Arab summit but the ministers said they had decided to defer a decision until they had tested what could be achieved through the Security Council.The resolutions adopted at the Arab League reflect the positions of regional heavyweights Egypt and Saudi Arabia - American allies who regard the Palestinian group Hamas which controls Gaza as an obstacle to efforts to revive a peace process with Israel.The two countries are anxious to avoid a summit where they are likely to come under pressure from Syria - a Hamas backer - to take steps that might satisfy public opinion but place them at odds with their American friends.The daily images of Israel’s bombardment of Gaza, and the non-stop flow of pictures of dead and injured children on Arab television screens have angered the Arab public and led to widespread condemnation of regional leaders for their inability to defend the Palestinians.Demonstrators in Egypt and elsewhere have demanded that Cairo and Amman break off ties with Israel and expel its ambassadors. There have also been calls for Saudi Arabia to withdraw the initiative it launched in 2002, offering Israel normal relations with all Arab countries in return to its withdrawal to 1967 lines.Egypt in particular has been the target of enormous popular anger for its insistence on sealing its border with Gaza since Hamas seized control of the territory eighteen months ago. The Rafah crossing into Egypt is Gaza’s only outlet to the outside world which does not go through Israel.But Cairo has been deeply rattled by the gains made by the Islamists of Hamas at the expense of their rivals in the Palestinian Authority. Hamas has strong ties with the outlawed Muslim Brotherhood opposition in Egypt. The group does not recognise Israel and calls for armed resistance against it, rejecting the Middle East peace process - a centre piece of Egypt’s foreign policy.Syria reportedly tried to press for the opening of the Rafah crossing at the Arab League meeting, but was turned down. In recent days Cairo has allowed some humanitarian aid to go into Gaza and Palestinians injured in the bombings to cross into Egypt for treatment. But the Egyptian authorities insist the border should remain closed until the Palestinian Authority ousted from Gaza by Hamas is able to run the crossing. Since the start of the Gaza offensive, Arab satellite channels such as al-Jazeera have given much airtime to critics of Egypt who have lambasted the country for accusing Hamas of provoking the Israeli attacks and for receiving Tzipi Livni, the Israeli foreign minister, in Cairo just a day before the launch of the military campaign.In an apparent attempt to assuage Cairo’s hurt feelings, the resolution issued by the Arab foreign ministers “praised the huge efforts made by the Arab Republic of Egypt to support the Palestinian people and to reconcile the Palestinian factions in order to achieve national unity.”"
         s2=u"Arab foreign ministers meeting in Cairo to frge a unified response to the Israeli offensive against Gaza have asked the Security Council to convene to issue a resolution compelling Israel to “cease immediately [its] aggression.”A delegation headed by Prince Saudi Al Faisal, the Saudi foreign minister, will press the Arab case in New York.The Cairo meeting also discussed calls by Qatar, Syria and Yemen for an emergency Arab summit but the ministers said they had decided to defer a decision until they had tested what could be achieved through the Security Council.The resolutions adopted at the Arab League reflect the positions of regional heavyweights Egypt and Saudi Arabia - American allies who regard the Palestinian group Hamas which controls Gaza as an obstacle to efforts to revive a peace process with Israel.The two countries are anxious to avoid a summit where they are likely to come under pressure from Syria - a Hamas backer - to take steps that might satisfy public opinion but place them at odds with their American friends.The daily images of Israel’s bombardment of Gaza, and the non-stop flow of pictures of dead and injured children on Arab television screens have angered the Arab public and led to widespread condemnation of regional leaders for their inability to defend the Palestinians.Demonstrators in Egypt and elsewhere have demanded that Cairo and Amman break off ties with Israel and expel its ambassadors. There have also been calls for Saudi Arabia to withdraw the initiative it launched in 2002, offering Israel normal relations with all Arab countries in return to its withdrawal to 1967 lines.Egypt in particular has been the target of enormous popular anger for its insistence on sealing its border with Gaza since Hamas seized control of the territory eighteen months ago. The Rafah crossing into Egypt is Gaza’s only outlet to the outside world which does not go through Israel.But Cairo has been deeply rattled by the gains made by the Islamists of Hamas at the expense of their rivals in the Palestinian Authority. Hamas has strong ties with the outlawed Muslim Brotherhood opposition in Egypt. The group does not recognise Israel and calls for armed resistance against it, rejecting the Middle East peace process - a centre piece of Egypt’s foreign policy.Syria reportedly tried to press for the opening of the Rafah crossing at the Arab League meeting, but was turned down. In recent days Cairo has allowed some humanitarian aid to go into Gaza and Palestinians injured in the bombings to cross into Egypt for treatment. But the Egyptian authorities insist the border should remain closed until the Palestinian Authority ousted from Gaza by Hamas is able to run the crossing. Since the start of the Gaza offensive, Arab satellite channels such as al-Jazeera have given much airtime to critics of Egypt who have lambasted the country for accusing Hamas of provoking the Israeli attacks and for receiving Tzipi Livni, the Israeli foreign minister, in Cairo just a day before the launch of the military campaign.In an apparent attempt to assuage Cairo’s hurt feelings, the resolution issued by the Arab foreign ministers “praised the huge efforts made by the Arab Republic of Egypt to support the Palestinian people and to reconcile the Palestinian factions in order to achieve natinal unity.”"
-        matches = superfastmatchv2.match(s1.lower(),s2.lower(),15)
+        matches = fastmatch.match(s1.lower(),s2.lower(),15)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),52) #Test of HARD_LIMIT
         
@@ -207,7 +207,7 @@ class TestSuperFastMatch(unittest.TestCase):
            "We do need help from the public to be vigilant and to report any suspicious incidents to us immediately. Then we can respond and take any necessary action.
            "We recognise that this large scale police presence has interrupted normal life for many people and we want to reassure residents that we are doing all we can to bring this investigation to a conclusion."
            """
-           matches = superfastmatchv2.match(s1.lower(),s2.lower(),15)
+           matches = fastmatch.match(s1.lower(),s2.lower(),15)
            printresults(matches,s1,s2)
            self.assertEqual(len(matches),86)
         
@@ -225,14 +225,14 @@ class TestSuperFastMatch(unittest.TestCase):
         "We do need help from the public to be vigilant and to report any suspicious incidents to us immediately. Then we can respond and take any necessary action.
         "We recognise that this large scale police presence has interrupted normal life for many people and we want to reassure residents that we are doing all we can to bring this investigation to a conclusion."
         """
-        matches = superfastmatchv2.match(s1.lower(),s2.lower(),15)
+        matches = fastmatch.match(s1.lower(),s2.lower(),15)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),12)
     
     def test_very_long(self):
         s1 = codecs.open('long.txt',encoding='utf-8').read()
         s2 = u"""The Secretary of State for Culture, Media and Sport, The Rt Hon James Purnell MP, announced today a capital investment of £50 million towards the new development of Tate Modern. This is the largest capital commitment by Government to a cultural project since the British Library which opened in 1998. Nicholas Serota, Director Tate, said: “Today’s announcement is an important endorsement by Government of the contribution that the arts make to society as a whole and the importance of British art at an international level. It gives us a platform for the creation of an institution for the 21st century, designed to serve the next generation of artists and visitors. This commitment confirms London’s position as one of the leading international centres for the visual arts.” The Success of Tate Modern In 2000, an investment of £137 million of public and private money created Tate Modern. In just seven years, the gallery has become most popular museum of modern art in the world. It has attracted over 30 million visitors since it opened and is Britain’s second leading tourist attraction. Around 60% of visitors are under 35 years of age. The gallery has helped revive a wide area of inner London, helping to reconfigure cultural tourism along the South Bank, creating up to 4,000 new jobs. The Need to Develop Tate Modern In spite of its success, much of Tate Modern’s potential is still to be realised. One third of the building remains derelict and needs to be brought into use. The building was originally designed for 1.8 million visitors a year. With present audiences at nearly 5 million, there is serious overcrowding in the galleries, particularly at weekends, and there is an urgent need to improve and extend facilities. Different kinds of galleries are required to show art forms new to Tate, including photography, video, film and performance, as well as more galleries to show major exhibitions in their entirety. Bigger spaces are needed to meet the requirements of Tate’s growing number of large-scale works and installations. With additional space, more of Tate’s Collection can go on view and key paintings, sculptures and installations can be brought out of storage and displayed on a more permanent basis. The New Building The new development, by internationally celebrated architects, Herzog & de Meuron, will create a spectacular new building adjoining Tate Modern to the south, on the foundation of the former power station’s oil tanks. This will be Britain’s most important new building for culture since the creation of the Royal National Theatre in 1976, the Barbican in 1982, and the British Library in 1998. The new building will increase Tate Modern’s size by 60% adding approximately 21,000 square metres of new space. The development will provide more space for contemporary art and enable Tate to explore new areas of contemporary visual culture involving photography, film, video and performance, enriching its current programme. Tate Modern’s outstanding and pioneering education programme will at last have the space to meet its potential and serve a new and broader audience. New Cultural Quarter The new development of Tate Modern will create a dynamic new part of London – a creative campus stretching southwards. A new entrance on the south side will open up a north-south route or ‘street’ right through the building, creating a pedestrian way from the City across the MillenniumBridge through the Turbine Hall to Southwark and the Elephant and Castle. The new development lies at the heart of London’s cultural quarter running from the London Eye to the DesignMuseum and consisting of a group of more than 20 cultural organisations. Next Steps The designs for the new building were granted planning permission by Southwark Council in March 2007 with the Planning Committee unanimous in its support for the scheme. The project will now enter its detailed design phase and a project team is being appointed. The total costs of the project are comparable to the costs of creating the original Tate Modern: £165 million in 2006 prices, £215 million at outturn in 2012. A projected additional 1 million visitors a year will increase Tate Modern’s operating revenues significantly. The Mayor of London has given a major investment of £7 million from the LDA towards the development and help fast-track the scheme so that it might be completed in time for the Olympic Games in 2012. Fundraising from the private sector is progressing well and includes the recent"""
-        matches = superfastmatchv2.match(s1,s2,15)
+        matches = fastmatch.match(s1,s2,15)
         printresults(matches,s1,s2)
         self.assertEqual(len(matches),96)
     
@@ -245,7 +245,7 @@ class TestSuperFastMatch(unittest.TestCase):
             return codecs.open(path,encoding=encoding).read()
         s1 = getFile('koran.txt','http://www.gutenberg.org/ebooks/2800.txt.utf8','utf-8').split('*END*')[-1]
         s2 = getFile('bible.txt','http://www.gutenberg.org/ebooks/10','utf-8').split('*END*')[-1]
-        matches = superfastmatchv2.match(s1,s2,20)
+        matches = fastmatch.match(s1,s2,20)
         printresults(matches[:20],s1,s2)
         self.assertEqual(len(matches),25257)
 
